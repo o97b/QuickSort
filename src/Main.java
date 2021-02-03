@@ -3,7 +3,7 @@ import java.util.ArrayList;
 public class Main {
 
     public static void main(String[] args) {
-        int N = 10;
+        int N = 40;
         ArrayList<Integer> array = new ArrayList<>();
 
         for(int i = 0; i < N; i++) {
