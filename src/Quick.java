@@ -2,33 +2,28 @@ import java.util.ArrayList;
 
 public class Quick {
 
-    public static NewComparator comparator = NewComparator.getComparator();
-    public static int cutoff = 10; // Параметр отсечки на сортировку вставками, обычно от 5 до 15.
-
+    public static NewComparator comparator = new NewComparator();
 
     public static void quickSort(ArrayList<Integer> array, int low, int high) {
+        int cutoff = 10; // Параметр отсечки на сортировку вставками, обычно от 5 до 15.
         if (high <= low + cutoff) { insertionSort(array, low, high); return; }
-        int partitionIndex = quickSortPartition(array, low, high);
 
-        quickSort(array, low, partitionIndex-1);
-        quickSort(array, partitionIndex+1, high);
-    }
+        int medianIndex = medianIndex(array, low, high, (low+high)/2);
+        Integer pivot = array.get(medianIndex);
+        int i = low, j = low + 1, k = high;
 
-    private static int quickSortPartition(ArrayList<Integer> array, int low, int high) {
-        Integer pivot = median(array.get(low), array.get(high), array.get((low+high)/2));
-        int i = low, j = high + 1;
-
-        while (true) {
-            while (comparator.compare(array.get(++i), pivot) < 0) { if (i == high) break; }
-            while (comparator.compare(pivot, array.get(--j)) < 0) { if (j == low) break; }
-            if (i >= j) break;
-
-            swap(array, i, j);
+        swap(array, low, medianIndex);
+        while (j <= k) {
+            int cmp = comparator.compare(array.get(j), pivot);
+            if (cmp < 0) swap(array, i++, j++);
+            else if (cmp > 0) swap(array, j, k--);
+            else j++;
         }
 
-        swap(array, low, j);
-        return j;
+        quickSort(array, low, i - 1);
+        quickSort(array, k + 1, high);
     }
+
 
     static public void insertionSort(ArrayList<Integer> array, int low, int high) {
         for (int i = low; i <= high; i ++) {
@@ -44,8 +39,9 @@ public class Quick {
         array.set(j, swapTemp);
     }
 
-    public static int median(int a, int b, int c) {
-        return (a > b) ? ((a > c) ? (Math.max(b, c)) : a)
-                : ((a > c) ? a :(Math.min(b, c)));
+    public static int medianIndex(ArrayList<Integer> array, int low, int high, int middle) {
+        int a = array.get(low), b = array.get(high), c = array.get(middle);
+        return (a > b) ? ((a > c) ? ((b > c) ? high : middle) : low)
+                : ((a > c) ? low : ((b > c) ? middle : high));
     }
 }
